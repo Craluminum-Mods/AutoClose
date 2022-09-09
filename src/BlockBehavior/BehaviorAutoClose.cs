@@ -3,6 +3,8 @@ using Vintagestory.API.Common;
 using Vintagestory.API.Config;
 using Vintagestory.API.MathTools;
 using Vintagestory.GameContent;
+using Vintagestory.API.Client;
+using Vintagestory.API.Util;
 
 namespace AutoClose
 {
@@ -69,6 +71,18 @@ namespace AutoClose
       {
         blockSel.Block.OnBlockInteractStart(byPlayer.Entity.World, byPlayer, GetSelectionFromPosition(newSlidingDoorPos));
       }
+    }
+
+    public override WorldInteraction[] GetPlacedBlockInteractionHelp(IWorldAccessor world, BlockSelection selection, IPlayer forPlayer, ref EnumHandling handling)
+    {
+      return new WorldInteraction[] {
+        new WorldInteraction()
+        {
+          ActionLangCode = string.Format("{0}: {1}", Lang.Get("blockhelp-door-openclose"), Lang.Get("blockhelp-WithoutAutoClosing")),
+          HotKeyCode = "ctrl",
+          MouseButton = EnumMouseButton.Right,
+        }
+      }.Append(base.GetPlacedBlockInteractionHelp(world, selection, forPlayer, ref handling));
     }
   }
 }
