@@ -13,7 +13,7 @@ namespace AutoClose
     public override string GetPlacedBlockInfo(IWorldAccessor world, BlockPos pos, IPlayer forPlayer)
     {
       return base.GetPlacedBlockInfo(world, pos, forPlayer)
-      + string.Format(Lang.Get("Autoclose delay: {0} ms", GetDelay(world)));
+      + "\n" + string.Format(Lang.Get("blockinfo-AutoCloseDelay", GetDelay(world) / 1000.00));
     }
 
     private int GetDelay(IWorldAccessor world)
