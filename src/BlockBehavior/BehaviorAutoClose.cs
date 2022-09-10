@@ -43,7 +43,7 @@ namespace AutoClose
       handling = EnumHandling.PreventSubsequent;
       blockSel.Block = world.BlockAccessor.GetBlock(blockSel.Position);
 
-      if (byPlayer.Entity.Controls.CtrlKey) return base.OnBlockInteractStart(world, byPlayer, blockSel, ref handling);
+      if (byPlayer?.Entity.Controls.CtrlKey == true) return base.OnBlockInteractStart(world, byPlayer, blockSel, ref handling);
 
       if ((blockSel.Block is BlockBaseDoor door && !door.IsOpened())
       || (blockSel.Block is BlockTrapdoor && HasOpenedState(blockSel.Block))

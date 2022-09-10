@@ -4,5 +4,5 @@
   "name": "Auto Close",
   "description": "After opening doors, etc., they automatically close after a while.",
   "authors": ["Craluminum2413", "G3rste"],
-  "version": "1.0.0"
+  "version": "1.0.1"
 }
