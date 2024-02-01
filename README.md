@@ -1,1 +1,1 @@
-# Auto Close
+# AutoClose

@@ -1,50 +1,53 @@
+using System;
 using Vintagestory.API.Common;
 
-namespace AutoClose.Configuration
+namespace AutoClose;
+
+public interface IModConfig
 {
-  static class ModConfig
-  {
-    private const string jsonConfig = "AutoClose.json";
-    private static AutoCloseConfig config;
+}
 
-    public static void ReadConfig(ICoreAPI api)
+public static class ModConfig
+{
+    public static T ReadConfig<T>(ICoreAPI api, string jsonConfig) where T : class, IModConfig
     {
-      try
-      {
-        config = LoadConfig(api);
+        T config;
 
-        if (config == null)
+        try
         {
-          GenerateConfig(api);
-          config = LoadConfig(api);
-        }
-        else
-        {
-          GenerateConfig(api, config);
-        }
-      }
-      catch
-      {
-        GenerateConfig(api);
-        config = LoadConfig(api);
-      }
+            config = LoadConfig<T>(api, jsonConfig);
 
-      api.World.Config.SetInt("AutoClose_Door_DelayMs", config.Delays["Vanilla"]["Door"]);
-      api.World.Config.SetInt("AutoClose_FenceGate_DelayMs", config.Delays["Vanilla"]["Fencegate"]);
-      api.World.Config.SetInt("AutoClose_Trapdoor_DelayMs", config.Delays["Vanilla"]["Trapdoor"]);
-      api.World.Config.SetInt("AutoClose_SlidingDoor_DelayMs", config.Delays["OtherMods"]["SlidingDoor"]);
-      api.World.Config.SetInt("AutoClose_Drawbridge_DelayMs", config.Delays["MedievalExpansion"]["Drawbridge"]);
-      api.World.Config.SetInt("AutoClose_Gate_DelayMs", config.Delays["MedievalExpansion"]["Gate"]);
-      api.World.Config.SetInt("AutoClose_Portcullis_DelayMs", config.Delays["MedievalExpansion"]["Portcullis"]);
+            if (config == null)
+            {
+                GenerateConfig<T>(api, jsonConfig);
+                config = LoadConfig<T>(api, jsonConfig);
+            }
+            else
+            {
+                GenerateConfig(api, jsonConfig, config);
+            }
+        }
+        catch
+        {
+            GenerateConfig<T>(api, jsonConfig);
+            config = LoadConfig<T>(api, jsonConfig);
+        }
+
+        return config;
     }
 
-    private static AutoCloseConfig LoadConfig(ICoreAPI api) =>
-      api.LoadModConfig<AutoCloseConfig>(jsonConfig);
+    private static T LoadConfig<T>(ICoreAPI api, string jsonConfig) where T : IModConfig
+    {
+        return api.LoadModConfig<T>(jsonConfig);
+    }
 
-    private static void GenerateConfig(ICoreAPI api) =>
-      api.StoreModConfig(new AutoCloseConfig(), jsonConfig);
+    private static void GenerateConfig<T>(ICoreAPI api, string jsonConfig, T previousConfig = null) where T : class, IModConfig
+    {
+        api.StoreModConfig(CloneConfig<T>(api, previousConfig), jsonConfig);
+    }
 
-    private static void GenerateConfig(ICoreAPI api, AutoCloseConfig previousConfig) =>
-      api.StoreModConfig(new AutoCloseConfig(previousConfig), jsonConfig);
-  }
+    private static T CloneConfig<T>(ICoreAPI api, T config = null) where T : class, IModConfig
+    {
+        return (T)Activator.CreateInstance(typeof(T), new object[] { api, config });
+    }
 }
