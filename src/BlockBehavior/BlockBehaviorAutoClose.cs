@@ -19,6 +19,10 @@ public class BlockBehaviorAutoClose : BlockBehavior
 
     public override bool OnBlockInteractStart(IWorldAccessor world, IPlayer byPlayer, BlockSelection blockSel, ref EnumHandling handling)
     {
+        if (byPlayer?.Entity?.Controls.CtrlKey == true)
+        {
+            return base.OnBlockInteractStart(world, byPlayer, blockSel, ref handling);
+        }
         handling = EnumHandling.PassThrough;
         world.RegisterCallbackUnique((world, pos, time) => TryAutoClose(world, blockSel, time), blockSel?.Position, GetDelay(this.block));
         return base.OnBlockInteractStart(world, byPlayer, blockSel, ref handling);
@@ -28,6 +32,10 @@ public class BlockBehaviorAutoClose : BlockBehavior
     {
         handling = EnumHandling.PassThrough;
         if (activationArgs?.GetAsBool("isAutoClose") == true)
+        {
+            return;
+        }
+        if (caller?.Player?.Entity?.Controls.CtrlKey == true)
         {
             return;
         }
